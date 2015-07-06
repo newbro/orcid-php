@@ -1,5 +1,6 @@
 {
     "name": "hubzero/orcid-php",
+    "description": "Library for ORCID web services",
     "license": "BSD New",
     "require": {
         "php": ">=5.4.0",
