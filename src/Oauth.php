@@ -436,7 +436,7 @@ class Oauth
             if (!$this->getAccessToken()) throw new Exception('You must first set an access token or authenticate');
 
             $this->http->setHeader([
-                'Content-Type'  => 'application/vdn.orcid+xml',
+                'Content-Type'  => 'application/vdn.orcid+json',
                 'Authorization' => 'Bearer ' . $this->getAccessToken()
             ]);
         }
