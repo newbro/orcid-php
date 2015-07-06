@@ -70,7 +70,6 @@ $orcid = new Profile($oauth);
 $id    = $orcid->id();
 $email = $orcid->email();
 $name  = $orcid->fullName();
-}
 ```
 
 The profile class currently only supports a limited number of helper methods for directly accessing elements from the profile data. This will be expanded upon as needed. The raw JSON data from the profile output is available by calling the raw() method.
