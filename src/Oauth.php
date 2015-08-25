@@ -399,7 +399,7 @@ class Oauth
         }
         else
         {
-            throw new Exception($data->{'error-desc'}->value);
+            throw new Exception($data->error_description);
         }
 
         return $this;
