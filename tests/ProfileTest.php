@@ -37,8 +37,8 @@ class ProfileTest extends \PHPUnit_Framework_TestCase
 	 **/
 	public function setup()
 	{
-		$this->complete = __DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'profile-complete.json';
-		$this->basic    = __DIR__ . DIRECTORY_SEPARATOR . 'fixtures' . DIRECTORY_SEPARATOR . 'profile-basic.json';
+		$this->complete = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'profile-complete.json';
+		$this->basic    = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'profile-basic.json';
 	}
 
 	/**
