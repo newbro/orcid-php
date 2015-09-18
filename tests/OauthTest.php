@@ -5,7 +5,7 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT
  */
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'http' . DIRECTORY_SEPARATOR . 'Curl.php';
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Http' . DIRECTORY_SEPARATOR . 'Curl.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Oauth.php';
 
 use Orcid\Oauth;
