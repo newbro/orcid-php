@@ -5,10 +5,8 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT
  */
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Http' . DIRECTORY_SEPARATOR . 'Curl.php';
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Oauth.php';
-
 use Orcid\Oauth;
+use \Mockery as m;
 
 /**
  * Base ORCID oauth tests
@@ -22,9 +20,7 @@ class OauthTest extends \PHPUnit_Framework_TestCase
      **/
     public function oauth()
     {
-        // Mock the Oauth class to return an ORCID iD
-        $http = $this->getMockBuilder('Orcid\Http\Curl')
-                     ->getMock();
+        $http = m::mock('Orcid\Http\Curl');
 
         return new Oauth($http);
     }
@@ -176,22 +172,19 @@ class OauthTest extends \PHPUnit_Framework_TestCase
      **/
     public function testAuthenticateThrowsExceptionForFailedRequest()
     {
-        // Mock the Oauth class to return an ORCID iD
-        $http = $this->getMockBuilder('Orcid\Http\Curl')
-                     ->getMock();
-
         // Overload some curl methods to simple return self
-        $http->method('setPostFields')
-             ->will($this->returnSelf());
-        $http->method('setUrl')
-             ->will($this->returnSelf());
-        $http->method('setHeader')
-             ->will($this->returnSelf());
+        $http = m::mock('Orcid\Http\Curl');
+        $http->shouldReceive('setPostFields')
+             ->andReturn(m::self())
+             ->getMock()
+             ->shouldReceive('setUrl')
+             ->andReturn(m::self())
+             ->getMock()
+             ->shouldReceive('setHeader')
+             ->andReturn(m::self());
 
-        // Tell the curl method to return an empty ORCID iD
         $response = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'response-failure.json');
-        $http->method('execute')
-             ->willReturn($response);
+        $http->shouldReceive('execute')->andReturn($response);
 
         $oauth = new Oauth($http);
 
@@ -208,35 +201,16 @@ class OauthTest extends \PHPUnit_Framework_TestCase
      **/
     public function testAuthenticateSetsPropertiesOnValidResponse()
     {
-        // Mock the Oauth class to return an ORCID iD
-        $http = $this->getMockBuilder('Orcid\Http\Curl')
-                     ->getMock();
-
-        // Overload some curl methods to simple return self
-        $http->method('setPostFields')
-             ->will($this->returnSelf());
-        $http->method('setUrl')
-             ->will($this->returnSelf());
-        $http->method('setHeader')
-             ->will($this->returnSelf());
+        $http = m::mock('Orcid\Http\Curl');
+        $http->shouldReceive('setPostFields', 'setUrl', 'setHeader')->andReturn(m::self());
 
         // Tell the curl method to return an empty ORCID iD
         $response = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'response-success.json');
-        $http->method('execute')
-             ->willReturn($response);
+        $http->shouldReceive('execute')->andReturn($response);
 
-        $oauth = $this->getMockBuilder('Orcid\Oauth')
-                      ->setConstructorArgs([$http])
-                      ->setMethods(['setAccessToken', 'setOrcid'])
-                      ->getMock();
-
-        $oauth->expects($this->once())
-              ->method('setAccessToken')
-              ->with($this->equalTo('123456789'));
-
-        $oauth->expects($this->once())
-              ->method('setOrcid')
-              ->with($this->equalTo('0000-0000-0000-0000'));
+        $oauth = m::mock('Orcid\Oauth', [$http])->makePartial();
+        $oauth->shouldReceive('setAccessToken')->once()->with('123456789');
+        $oauth->shouldReceive('setOrcid')->once()->with('0000-0000-0000-0000');
 
         $oauth->setClientId('1234')
               ->setClientSecret('12345')
@@ -261,20 +235,12 @@ class OauthTest extends \PHPUnit_Framework_TestCase
      **/
     public function testGetPublicProfileUsesProperUrl()
     {
-        $http = $this->getMockBuilder('Orcid\Http\Curl')
-                     ->disableOriginalConstructor()
-                     ->setMethods(['setUrl', 'setHeader', 'execute', 'setOpt'])
-                     ->getMock();
+        $http = m::mock('Orcid\Http\Curl');
+        $http->shouldReceive('execute', 'setHeader', 'setOpt')->andReturn(m::self())
+             ->getMock()
+             ->shouldReceive('setUrl')->once()->with('http://pub.orcid.org/v1.2/0000-0000-0000-0000/orcid-profile');
 
-        $http->expects($this->once())
-             ->method('setUrl')
-             ->with($this->equalTo('http://pub.orcid.org/v1.2/0000-0000-0000-0000/orcid-profile'));
-
-        $oauth = $this->getMockBuilder('Orcid\Oauth')
-                      ->setConstructorArgs([$http])
-                      ->setMethods(null)
-                      ->getMock();
-
+        $oauth = m::mock('Orcid\Oauth', [$http])->makePartial();
         $oauth->getProfile('0000-0000-0000-0000');
     }
 
@@ -285,20 +251,12 @@ class OauthTest extends \PHPUnit_Framework_TestCase
      **/
     public function testGetPublicProfileUsesProperUrlWithEstablishedOrcid()
     {
-        $http = $this->getMockBuilder('Orcid\Http\Curl')
-                     ->disableOriginalConstructor()
-                     ->setMethods(['setUrl', 'setHeader', 'execute', 'setOpt'])
-                     ->getMock();
+        $http = m::mock('Orcid\Http\Curl');
+        $http->shouldReceive('execute', 'setHeader', 'setOpt')->andReturn(m::self())
+             ->getMock()
+             ->shouldReceive('setUrl')->once()->with('http://pub.orcid.org/v1.2/0000-0000-0000-0000/orcid-profile');
 
-        $http->expects($this->once())
-             ->method('setUrl')
-             ->with($this->equalTo('http://pub.orcid.org/v1.2/0000-0000-0000-0000/orcid-profile'));
-
-        $oauth = $this->getMockBuilder('Orcid\Oauth')
-                      ->setConstructorArgs([$http])
-                      ->setMethods(null)
-                      ->getMock();
-
+        $oauth = m::mock('Orcid\Oauth', [$http])->makePartial();
         $oauth->usePublicApi()->setOrcid('0000-0000-0000-0000')->getProfile();
     }
 
@@ -309,20 +267,12 @@ class OauthTest extends \PHPUnit_Framework_TestCase
      **/
     public function testGetMemberProfileUsesProperUrl()
     {
-        $http = $this->getMockBuilder('Orcid\Http\Curl')
-                     ->disableOriginalConstructor()
-                     ->setMethods(['setUrl', 'setHeader', 'execute', 'setOpt'])
-                     ->getMock();
+        $http = m::mock('Orcid\Http\Curl');
+        $http->shouldReceive('execute', 'setHeader', 'setOpt')->andReturn(m::self())
+             ->getMock()
+             ->shouldReceive('setUrl')->once()->with('https://api.orcid.org/v1.2/0000-0000-0000-0000/orcid-profile');
 
-        $http->expects($this->once())
-             ->method('setUrl')
-             ->with($this->equalTo('https://api.orcid.org/v1.2/0000-0000-0000-0000/orcid-profile'));
-
-        $oauth = $this->getMockBuilder('Orcid\Oauth')
-                      ->setConstructorArgs([$http])
-                      ->setMethods(null)
-                      ->getMock();
-
+        $oauth = m::mock('Orcid\Oauth', [$http])->makePartial();
         $oauth->useMembersApi()->setAccessToken('123456789')->getProfile('0000-0000-0000-0000');
     }
 
@@ -334,20 +284,12 @@ class OauthTest extends \PHPUnit_Framework_TestCase
      **/
     public function testGetMemberProfileWithNoAccessTokenThrowsException()
     {
-        $http = $this->getMockBuilder('Orcid\Http\Curl')
-                     ->disableOriginalConstructor()
-                     ->setMethods(['setUrl', 'setHeader', 'execute', 'setOpt'])
-                     ->getMock();
+        $http = m::mock('Orcid\Http\Curl');
+        $http->shouldReceive('execute', 'setHeader', 'setOpt')->andReturn(m::self())
+             ->getMock()
+             ->shouldReceive('setUrl')->once()->with('https://api.orcid.org/v1.2/0000-0000-0000-0000/orcid-profile');
 
-        $http->expects($this->once())
-             ->method('setUrl')
-             ->with($this->equalTo('https://api.orcid.org/v1.2/0000-0000-0000-0000/orcid-profile'));
-
-        $oauth = $this->getMockBuilder('Orcid\Oauth')
-                      ->setConstructorArgs([$http])
-                      ->setMethods(null)
-                      ->getMock();
-
+        $oauth = m::mock('Orcid\Oauth', [$http])->makePartial();
         $oauth->useMembersApi()->getProfile('0000-0000-0000-0000');
     }
 }
