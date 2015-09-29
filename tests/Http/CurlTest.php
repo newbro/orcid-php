@@ -5,10 +5,10 @@
  * @license   http://www.opensource.org/licenses/mit-license.php MIT
  */
 
-require_once dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Http' . DIRECTORY_SEPARATOR . 'Curl.php';
 require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Mock' . DIRECTORY_SEPARATOR . 'CurlInterceptor.php';
 
 use Orcid\Http\Curl;
+use \Mockery as m;
 
 /**
  * Base curl functionality tests tests
@@ -46,10 +46,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
      **/
     private function curl()
     {
-        return $this->getMockBuilder('Orcid\Http\Curl')
-                    ->disableOriginalConstructor()
-                    ->setMethods(['setOpt'])
-                    ->getMock();
+        return m::mock('Orcid\Http\Curl')->makePartial();
     }
 
     /**
@@ -121,12 +118,7 @@ class CurlTest extends \PHPUnit_Framework_TestCase
      **/
     public function testSetUrlCallsSetOptWithUrl()
     {
-        $curl = $this->curl();
-
-        $curl->expects($this->exactly(1))
-             ->method('setOpt');
-
-        $curl->setUrl('http://hubzero.org');
+        $this->curl()->shouldReceive('setOpt')->once()->getMock()->setUrl('http://hubzero.org');
     }
 
     /**
@@ -136,19 +128,19 @@ class CurlTest extends \PHPUnit_Framework_TestCase
      **/
     public function testSetPostFields()
     {
-        $curl = $this->curl();
-
-        $curl->expects($this->exactly(2))
-             ->method('setOpt')
-             ->withConsecutive(
-                [$this->equalTo(CURLOPT_POST),       $this->equalTo(2)],
-                [$this->equalTo(CURLOPT_POSTFIELDS), $this->equalTo('foo=bar&me=you')]
-             );
-
-        $curl->setPostFields([
-            'foo' => 'bar',
-            'me'  => 'you'
-        ]);
+        $this->curl()
+             ->shouldReceive('setOpt')
+             ->once()
+             ->with(CURLOPT_POST, 2)
+             ->getMock()
+             ->shouldReceive('setOpt')
+             ->once()
+             ->with(CURLOPT_POSTFIELDS, 'foo=bar&me=you')
+             ->getMock()
+             ->setPostFields([
+                 'foo' => 'bar',
+                 'me'  => 'you'
+             ]);
     }
 
     /**
@@ -158,19 +150,19 @@ class CurlTest extends \PHPUnit_Framework_TestCase
      **/
     public function testSetHeaders()
     {
-        $curl = $this->curl();
-
-        $curl->expects($this->exactly(2))
-             ->method('setOpt')
-             ->withConsecutive(
-                [$this->equalTo(CURLOPT_HTTPHEADER), $this->equalTo(['foo: bar'])],
-                [$this->equalTo(CURLOPT_HTTPHEADER), $this->equalTo(['foo: bar', 'me: you'])]
-             );
-
-        $curl->setHeader('foo: bar');
-        $curl->setHeader([
-            'foo' => 'bar',
-            'me'  => 'you'
-        ]);
+        $this->curl()
+             ->shouldReceive('setOpt')
+             ->once()
+             ->with(CURLOPT_HTTPHEADER, ['foo: bar'])
+             ->getMock()
+             ->shouldReceive('setOpt')
+             ->once()
+             ->with(CURLOPT_HTTPHEADER, ['foo: bar', 'me: you'])
+             ->getMock()
+             ->setHeader('foo: bar')
+             ->setHeader([
+                 'foo' => 'bar',
+                 'me'  => 'you'
+             ]);
     }
 }
