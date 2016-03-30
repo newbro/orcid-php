@@ -508,7 +508,7 @@ class Oauth
      **/
     private function getApiEndpoint($endpoint, $orcid = null)
     {
-        $url  = ($this->level == 'pub') ? 'http://' : 'https://';
+        $url  = 'https://';
         $url .= $this->level . '.';
         $url .= (!empty($this->environment)) ? $this->environment . '.' : '';
         $url .= self::HOSTNAME;
