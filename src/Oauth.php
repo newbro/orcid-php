@@ -489,7 +489,7 @@ class Oauth
             }
 
             $this->http->setHeader([
-                'Content-Type'  => 'application/vdn.orcid+json',
+                'Content-Type'  => 'application/vnd.orcid+json',
                 'Authorization' => 'Bearer ' . $this->getAccessToken()
             ]);
         } else {
