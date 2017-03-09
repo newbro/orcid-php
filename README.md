@@ -79,3 +79,33 @@ $name  = $orcid->fullName();
 The profile class currently only supports a limited number of helper methods for directly accessing elements from the profile data. This will be expanded upon as needed. The raw JSON data from the profile output is available by calling the raw() method.
 
 Note that some fields (like email) may return null if the user has not made that field available.
+
+### Environment and API types
+
+ORCID supports two general API endpoints.  The first is their public API, and a second is for registered ORCID members (membership in this scenario does not simply mean that you have an ORCID account).  The public API is used by default and currently supports all functionality provided by the library.  You can, however, switch to the member API by calling:
+
+```php
+$oauth = new Oauth;
+$oauth->useMembersApi();
+```
+
+If you explicitly want to use the public API, you can do so by calling:
+
+```php
+$oauth = new Oauth;
+$oauth->usePublicApi();
+```
+
+ORCID also supports a sandbox environment designed for testing.  To use this environment, rather than the production environment (which is default), you can call the following command:
+
+```php
+$oauth = new Oauth;
+$oauth->useSandboxEnvironment();
+```
+
+The counterpart to this function, though not explicitly necessary, is:
+
+```php
+$oauth = new Oauth;
+$oauth->useProductionEnvironment();
+```
